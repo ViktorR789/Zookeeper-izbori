@@ -1,0 +1,12 @@
+{
+  "election_type": "parliamentary",
+  "polling_stations_count": 1000,
+  "candidates": [
+    "Candidate_A",
+    "Candidate_B",
+    "Candidate_C",
+    "Candidate_D"
+  ],
+  "registered_voters_per_station_min": 200,
+  "registered_voters_per_station_max": 500
+}
