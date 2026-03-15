@@ -30,7 +30,11 @@ public class VoteSubmission implements Serializable{
     }
     
     public int getTotalCandidateVotes() {
-        return votesPerCandidate.values().stream().mapToInt(Integer::intValue).sum();
+    	int sum=0;
+    	for(int votes : votesPerCandidate.values()) {
+    		sum+=votes;
+    	}
+    	return sum;
     }
     
     public boolean isValid(){

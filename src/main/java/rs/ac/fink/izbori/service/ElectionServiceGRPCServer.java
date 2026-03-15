@@ -2,7 +2,7 @@ package rs.ac.fink.izbori.service;
 
 import io.grpc.stub.StreamObserver;
 import rs.ac.fink.izbori.grpc.*;
-import rs.ac.fink.izbori.model.VoteSubmission;
+import rs.ac.fink.izbori.model.*;
 import rs.ac.fink.izbori.server.ElectionAppServer;
 
 import java.util.HashMap;
@@ -34,6 +34,22 @@ public class ElectionServiceGRPCServer extends ElectionServiceGrpc.ElectionServi
             .setStatus(status)
             .setMessage(result.message())
             .setVerified(result.verified())
+            .build();
+        
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+    
+    public void getStatistics(StatisticsRequest request, StreamObserver<StatisticsResponse> responseObserver) {
+        Statistics stats = appServer.getStatistics();
+        
+        StatisticsResponse response = StatisticsResponse.newBuilder()
+            .setPercentageReported(stats.percentageReported)
+            .setTurnoutPercentage(stats.turnoutPercentage)
+            .putAllResultsPerCandidate(stats.resultsPerCandidate)
+            .setStationsNeedingRetry(stats.stationsNeedingRetry)
+            .setTotalStations(stats.totalStations)
+            .setVerifiedStations(stats.verifiedStations)
             .build();
         
         responseObserver.onNext(response);

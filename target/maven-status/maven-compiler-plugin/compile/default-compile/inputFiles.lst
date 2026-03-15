@@ -5,6 +5,7 @@ C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\serv
 C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\commands\Command.java
 C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\core\ReplicaNode.java
 C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\core\SyncPrimitive.java
+C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\model\VoteData.java
 C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\commands\SubmitVotesCommand.java
 C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\grpc\VoteResponse.java
 C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\grpc\LeaderRequestOrBuilder.java
@@ -14,6 +15,7 @@ C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\grpc
 C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\grpc\StatisticsRequest.java
 C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\grpc\VoteResponseOrBuilder.java
 C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\grpc\LogStatus.java
+C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\model\Statistics.java
 C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\grpc\LeaderInfo.java
 C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\grpc\LogResponseOrBuilder.java
 C:\Users\pcpc\eclipse-workspace\izbori-2026\src\main\java\rs\ac\fink\izbori\client\ControllerClient.java

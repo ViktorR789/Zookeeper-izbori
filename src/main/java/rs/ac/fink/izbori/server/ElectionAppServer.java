@@ -83,6 +83,14 @@ public class ElectionAppServer implements ReplicaNode.LogCommandExecutor {
         return new VoteOperationResult(status, result.message,result.verified);
     }
     
+    public Statistics getStatistics() {
+        if (!myReplicaNode.isLeader() && !myReplicaNode.isSynchronized()) {
+            throw new RuntimeException("Follower not synchronized");
+        }
+        
+        return electionService.getStatistics();
+    }
+    
     public static void main(String[] args) throws Exception {
         if (args.length != 4){
             System.out.println("Usage: ElectionAppServer <zookeeper_host:port> <gRPC_port> <log_file> <config.json>");

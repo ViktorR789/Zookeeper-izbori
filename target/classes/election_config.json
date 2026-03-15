@@ -1,6 +1,6 @@
 {
   "election_type": "parliamentary",
-  "polling_stations_count": 1000,
+  "polling_stations_count": 100,
   "candidates": [
     "Candidate_A",
     "Candidate_B",
