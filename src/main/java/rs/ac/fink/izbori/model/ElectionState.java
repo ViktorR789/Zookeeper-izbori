@@ -34,4 +34,16 @@ public class ElectionState implements Serializable{
     public String getElectionType(){
         return electionType;
     }
+    
+    public void saveSnapshot(String filename) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+            oos.writeObject(this);
+        }
+    }
+    
+    public static ElectionState loadSnapshot(String filename) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+            return (ElectionState) ois.readObject();
+        }
+    }
 }

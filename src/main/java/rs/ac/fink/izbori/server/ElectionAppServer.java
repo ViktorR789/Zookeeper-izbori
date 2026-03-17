@@ -13,7 +13,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.util.*;
 
-public class ElectionAppServer implements ReplicaNode.LogCommandExecutor {
+public class ElectionAppServer implements ReplicaNode.LogCommandExecutor,ReplicatedLog.StateProvider {
     
     public static final String APP_ROOT_NODE="/election";
     
@@ -30,9 +30,12 @@ public class ElectionAppServer implements ReplicaNode.LogCommandExecutor {
     public ElectionAppServer(ElectionState initialState,String zkAddress, String zkRoot,String myGRPCAddress,String logFileName) throws Exception{
         this.state = initialState;
         this.electionService= new ElectionServiceImpl(state);
-        this.myReplicaNode =new ReplicaNode(zkAddress, zkRoot, myGRPCAddress, logFileName, this);
-        
+        this.myReplicaNode =new ReplicaNode(zkAddress, zkRoot, myGRPCAddress, logFileName, this,this);
+        this.myReplicaNode.getReplicatedLog().replayLog();
     }
+    
+    
+    
     
     protected ReplicaNode getReplicaNode(){
         return myReplicaNode;
@@ -81,6 +84,23 @@ public class ElectionAppServer implements ReplicaNode.LogCommandExecutor {
         };
         
         return new VoteOperationResult(status, result.message,result.verified);
+    }
+    
+    @Override
+    public void applyCommand(byte[] commandBytes) {
+        executeReplicatedLogCommand(commandBytes);
+    }
+    
+    @Override
+    public void saveSnapshot(String filename) throws IOException {
+        state.saveSnapshot(filename);
+    }
+    
+    @Override
+    public Object loadSnapshot(String filename) throws IOException, ClassNotFoundException {
+        this.state = ElectionState.loadSnapshot(filename);
+        this.electionService = new ElectionServiceImpl(state);
+        return state;
     }
     
     public Statistics getStatistics() {

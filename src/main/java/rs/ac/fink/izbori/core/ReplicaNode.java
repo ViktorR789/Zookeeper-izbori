@@ -60,12 +60,12 @@ public class ReplicaNode extends ReplicatedLogServiceGrpc.ReplicatedLogServiceIm
     volatile boolean running = false;
     private Thread thread = null;
     
-    public ReplicaNode(String zkAddress, String zkRoot, String myGRPCAddress,String logFileName, LogCommandExecutor logCommandExecutor) throws FileNotFoundException {
+    public ReplicaNode(String zkAddress, String zkRoot, String myGRPCAddress,String logFileName, LogCommandExecutor logCommandExecutor,ReplicatedLog.StateProvider stateProvider) throws FileNotFoundException {
 		this.logCommandExecutor = logCommandExecutor;
 		this.root = zkRoot;
 		this.myGRPCAddress = myGRPCAddress;
 		
-		initReplicatedLog(logFileName);
+		initReplicatedLog(logFileName,stateProvider);
 		
 		SyncPrimitive sp = new SyncPrimitive(zkAddress, zkNotifier);
 		this.zk = sp.getZk();
@@ -96,8 +96,8 @@ public class ReplicaNode extends ReplicatedLogServiceGrpc.ReplicatedLogServiceIm
 		}
 	}
 
-	protected void initReplicatedLog(String logFileName) throws FileNotFoundException {
-		this.replicatedLog = new ReplicatedLog(logFileName, this);
+	protected void initReplicatedLog(String logFileName,ReplicatedLog.StateProvider stateProvider) throws FileNotFoundException {
+		this.replicatedLog = new ReplicatedLog(logFileName, this,stateProvider);
 	}
     
     public ReplicatedLog getReplicatedLog() {
@@ -161,16 +161,22 @@ public class ReplicaNode extends ReplicatedLogServiceGrpc.ReplicatedLogServiceIm
      */
     @Override
     public void replicateOnFollowers(Long entryAtIndex, byte[] data) {
-        // Lider salje svim pratiocima novu komandu/zahtev da upisu u svoj log!
         LogEntry logEntry = LogEntry.newBuilder()
             .setEntryAtIndex(entryAtIndex)
             .setLogEntryData(ByteString.copyFrom(data))
             .build();
         
         for (FollowerGRPCChannel grpcChannel : followersChannelMap.values()) {
-            grpcChannel.getBlockingStub().appendLog(logEntry);
+            LogResponse response = grpcChannel.getBlockingStub().appendLog(logEntry);
+            if (response.getStatus() == LogStatus.LOG_HASNT_LAST_ENTRY) {
+                System.out.println("Follower missing logs, syncing from " + 
+                    response.getLastEntryIndex() + " to " + entryAtIndex);
+                this.getReplicatedLog().syncFollower(grpcChannel, response.getLastEntryIndex(), entryAtIndex);
+            }
         }
     }
+
+    
     
     /**
      * Replika-server izvrsava ovu gRPC metodu kada mu lider pošalje novu komandu da upiše kod sebe u log i
@@ -182,7 +188,7 @@ public class ReplicaNode extends ReplicatedLogServiceGrpc.ReplicatedLogServiceIm
         Long entryIndex = request.getEntryAtIndex();
         LogResponse response;
         
-        if (replicatedLog.getLastLogEntryIndex() < (entryIndex - 1)) {
+        if (replicatedLog.getLastLogEntryIndex()<(entryIndex-1)) {
             response = LogResponse.newBuilder()
                 .setStatus(LogStatus.LOG_HASNT_LAST_ENTRY)
                 .setLastEntryIndex(replicatedLog.getLastLogEntryIndex())
